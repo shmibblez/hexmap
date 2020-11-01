@@ -1,3 +1,5 @@
+require('array-flat-polyfill')
+
 import { Icosahedron } from "./icosahedron";
 import { Vectors3, point3, gpoint3 } from "./point3";
 import { rotationMethod, resolution } from "./stuff"
