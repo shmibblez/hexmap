@@ -9,6 +9,7 @@ npm install hexmap --save
 import { Icosahedron, point3, Vectors3 } from 'hexmap';
 
 const point = Vectors3.fromCoordinates({ lat: -90, lon: 0 })
+const icosahedron = new Icosahedron()
 const hash = icosahedron.generateHash({ p: point, res: 74, rotationMethod: 'gnomonic' })
 ```
 and that's pretty much it, for generating hashes at least
