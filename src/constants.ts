@@ -1,13 +1,13 @@
 import { point3 } from "./point3";
 
 export class Constants {
-  static get golden_ratio() {
+  static get golden_ratio(): number {
     return (1 + Math.sqrt(5)) / 2;
   }
-  static get radius() {
+  static get radius(): number {
     return 250;
   }
-  static get diameter() {
+  static get diameter(): number {
     return 2 * Math.PI * Constants.radius;
   }
   static get origin3(): point3 {

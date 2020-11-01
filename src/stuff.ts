@@ -43,7 +43,7 @@ export function roundNums(
   return [Number(n1.toFixed(places)), Number(n2.toFixed(places))];
 }
 
-export function roundNum(n: number, places = 0) {
+export function roundNum(n: number, places = 0): number {
   return Number(n.toFixed(places));
 }
 
@@ -76,8 +76,8 @@ export function numDivisions({ res }: { res: resolution }): number {
  * @returns percent of components of p along triangle sides from tri.C -> [component along CA, component along CB]
  */
 export function calcPercentQuaternion({
-  tri,
-  p
+  tri, // @typescript-eslint ignore no-unused-vars
+  p // @typescript-eslint ignore no-unused-vars
 }: {
   tri: triangle;
   p: point3 | gpoint3;

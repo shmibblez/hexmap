@@ -383,7 +383,7 @@ export class Icosahedron {
     rotationMethod?: rotationMethod;
   }): string {
     if (rotationMethod === "gnomonic") {
-      let lazyPoints = this.pointsAroundLazy({
+      const lazyPoints = this.pointsAroundLazy({
         p: p,
         res: res,
         rotationMethod: rotationMethod
@@ -570,7 +570,7 @@ export class Icosahedron {
       let r = 0;
       while (points[lowerVert + r] && points[lowerVert + r][lowerHorz]) {
         let c = 0;
-        let row = rowOff + r;
+        const row = rowOff + r;
         while (points[lowerVert + r][lowerHorz + c]) {
           let col = (lowerVert + r) * tri.num + lowerHorz + c;
           if (col === row * 5) col = 0;
@@ -600,7 +600,7 @@ export class Icosahedron {
       let r = 0;
       while (points[lowerVert + r] && points[lowerVert + r][lowerHorz]) {
         let c = 0;
-        let row = rowOff + r;
+        const row = rowOff + r;
         while (points[lowerVert + r][lowerHorz + c]) {
           let col = colOff + c - r;
           if (col === nd * 5) col = 0;
@@ -630,7 +630,7 @@ export class Icosahedron {
       let r = 0;
       while (points[lowerVert + r] && points[lowerVert + r][lowerHorz]) {
         let c = 0;
-        let row = rowOff + r;
+        const row = rowOff + r;
         while (points[lowerVert + r][lowerHorz + c]) {
           let col = colOff + nd * 2 - row - lowerHorz - c; //colOff - c - r;
           if (col === nd * 5) col = 0;
@@ -658,7 +658,7 @@ export class Icosahedron {
       let r = 0;
       while (points[lowerVert + r] && points[lowerVert + r][lowerHorz]) {
         let c = 0;
-        let row = rowOff + r;
+        const row = rowOff + r;
         while (points[lowerVert + r][lowerHorz + c]) {
           let col = (nd - lowerVert - r) * (tri.num - 15 + 1) - lowerHorz - c;
           if (col === (nd * 3 - row) * 5) col = 0;

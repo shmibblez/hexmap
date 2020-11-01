@@ -85,7 +85,7 @@ export class Quaternions {
  * utility class for points/vectors
  */
 export class Vectors3 {
-  static hash(p: gpoint3) {
+  static hash(p: gpoint3): string {
     return `${p.res}|${p.row}|${p.col}`;
   }
   /**
@@ -386,8 +386,8 @@ export class Vectors3 {
    */
   static spheriphy2D(
     points: (point3 | gpoint3)[][],
-    lowerHorz: number = 0,
-    lowerVert: number = 0
+    lowerHorz = 0,
+    lowerVert = 0
   ): (point3 | gpoint3)[][] {
     // return points;
     const spherified: (point3 | gpoint3)[][] = [];
@@ -717,7 +717,7 @@ export class Vectors3 {
    * @param second second point
    * @returns point perpendicular to first point
    */
-  static perp({ a, b }: { a: point3 | gpoint3; b: point3 | gpoint3 }) {
+  static perp({ a, b }: { a: point3 | gpoint3; b: point3 | gpoint3 }): point3 {
     const c = Vectors3.unit(Vectors3.cross(a, b));
     return Vectors3.cross(c, a);
   }
@@ -756,7 +756,7 @@ export class Vectors3 {
     const z = p1.x * p2.y - p2.x * p1.y;
     return { x: x, y: y, z: z };
   }
-  static magnitude(vec: point3 | gpoint3) {
+  static magnitude(vec: point3 | gpoint3): number {
     return Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
   }
   static multByScalar({
