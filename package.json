@@ -1,6 +1,6 @@
 {
   "name": "hexmap",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "can geohash and generate hexagons with icosahedron as base",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
