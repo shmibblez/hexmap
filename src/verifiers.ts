@@ -27,7 +27,7 @@ export function verifyMapOrientation(mo: mapOrientation): boolean {
     }
     return true;
 }
-export function verifyMapOrientationKey(mo: mapOrientationKey) {
+export function verifyMapOrientationKey(mo: mapOrientationKey): boolean {
     if (mo !== "e" && mo !== "d") {
         throw new Error(
             `unknown rotation method key, valid ones: "e" or "d", provided one: ${mo}`
@@ -35,7 +35,7 @@ export function verifyMapOrientationKey(mo: mapOrientationKey) {
     }
     return true;
 }
-export function verifyRotationMethod(rm: rotationMethod) {
+export function verifyRotationMethod(rm: rotationMethod): boolean {
     if (rm !== "gnomonic" && rm !== "quaternion") {
         throw new Error(
             `invaild rotation method, valid ones: "gnomonic" or "quaternion", provided one: ${rm}`
@@ -48,7 +48,7 @@ export function verifyRotationMethod(rm: rotationMethod) {
     }
     return true;
 }
-export function verifyRotationMethodKey(rm: rotationMethodKey) {
+export function verifyRotationMethodKey(rm: rotationMethodKey): boolean {
     if (rm !== "g" && rm !== "q") {
         throw new Error(
             `unknown rotation method key, valid ones: "g" or "q", provided one: ${rm}`
@@ -56,7 +56,7 @@ export function verifyRotationMethodKey(rm: rotationMethodKey) {
     }
     return true;
 }
-export function verifySplitHashArr(arr: any[]) {
+export function verifySplitHashArr(arr: (number | string)[]): boolean {
     if (arr.length !== 3 && arr.length !== 5) {
         throw new Error(
             `invalid hash, must have either 3 or 5 components, provided components: ${JSON.stringify(
