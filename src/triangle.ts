@@ -48,7 +48,7 @@ export class Triangles {
    * @param tri triangle
    * @return random point that's also inside tri
    */
-  static randomPointInTri({ tri }: { tri: triangle }): point3 {
+  static randomPointInTri({ tri }: { tri: triangle }) {
     let p = Vectors3.randomPoint();
     while (!Triangles.containsPoint({ tri: tri, point: p })) {
       p = Vectors3.randomPoint();
@@ -177,7 +177,8 @@ export class Triangles {
     // console.log("old horizontal percent: " + oldHorzPercent);
     // console.log("new horizontal percent: " + newHorzPercent);
 
-    const points: point3[][] = [];
+    /** {@link TODO: make 2d array, for rows and cols, also move to tris and deal with numbering rows and cols here} */
+    let points: point3[][] = [];
     const estimatedHorzCenter = roundNum(horzPercent * nd);
     // while vertical points exist, generate points for their rows in range
     let lowerHorzBound: number;
@@ -306,7 +307,9 @@ export class Triangles {
               ? lowerVertBound
               : nd - lowerVertBound
         });
-    return horzPoints[lowerHorzBoun];
+    return rotationMethod === "gnomonic"
+      ? Vectors3.spheriphy(horzPoints[lowerHorzBoun])
+      : horzPoints[lowerHorzBoun];
   }
   /**
    * checks if triangle contains point

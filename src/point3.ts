@@ -1,6 +1,14 @@
 /* eslint-disable no-undef, @typescript-eslint/no-use-before-define */
 import { Constants } from "./constants";
-import { deg2rad, numDivisions, resolution } from "./stuff";
+import {
+  deg2rad,
+  mapOrientation,
+  mapOrientationHashKeys,
+  numDivisions,
+  resolution,
+  rotationMethod,
+  rotationMethodHashKeys
+} from "./stuff";
 import { Pointing, triangle } from "./triangle";
 
 // 3d point on grid: has resolution, row, and col (for referencing other points if needed), starting point is origin
@@ -85,8 +93,18 @@ export class Quaternions {
  * utility class for points/vectors
  */
 export class Vectors3 {
-  static hash(p: gpoint3): string {
-    return `${p.res}|${p.row}|${p.col}`;
+  static hash({
+    p,
+    mapOrientation,
+    rotationMethod
+  }: {
+    p: gpoint3;
+    mapOrientation: mapOrientation;
+    rotationMethod: rotationMethod;
+  }): string {
+    const orientationKey = mapOrientationHashKeys[mapOrientation];
+    const rotationKey = rotationMethodHashKeys[rotationMethod];
+    return `${orientationKey}|${rotationKey}|${p.res}|${p.row}|${p.col}`;
   }
   /**
    * uses ECEF coordinate system, {@link https://en.wikipedia.org/wiki/ECEF}
@@ -369,6 +387,14 @@ export class Vectors3 {
       points[c] = rotated;
     }
     return [points, lower];
+  }
+  static spheriphy(point: point3 | gpoint3): point3 | gpoint3 {
+    const r = Constants.radius;
+    const spherified: point3 | gpoint3 = Vectors3.multByScalar({
+      vec: Vectors3.unit(point),
+      num: r
+    });
+    return spherified;
   }
   static spheriphy1D(points: (point3 | gpoint3)[]): (point3 | gpoint3)[] {
     // return points;

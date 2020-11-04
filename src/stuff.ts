@@ -12,6 +12,34 @@ export type coordinate = { lat: number; lon: number };
 
 // rotation method
 export type rotationMethod = "gnomonic" | "quaternion";
+export type rotationMethodKey = "g" | "q";
+export type mapOrientation = "ECEF" | "dymaxion";
+export type mapOrientationKey = "e" | "d";
+
+export const rotationMethodHashKeys: {
+  [k in rotationMethod]: rotationMethodKey;
+} = {
+  gnomonic: "g",
+  quaternion: "q"
+};
+export const rotationMethodFromKeys: {
+  [k in rotationMethodKey]: rotationMethod;
+} = {
+  g: "gnomonic",
+  q: "quaternion"
+};
+export const mapOrientationHashKeys: {
+  [k in mapOrientation]: mapOrientationKey;
+} = {
+  ECEF: "e",
+  dymaxion: "d"
+};
+export const mapOrientationFromKeys: {
+  [k in mapOrientationKey]: mapOrientation;
+} = {
+  e: "ECEF",
+  d: "dymaxion"
+};
 
 /**
  * allowed resolutions, just number since resolution can be absolutely massive

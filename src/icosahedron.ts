@@ -6,9 +6,21 @@ import {
   resolution,
   numDivisions,
   closestEvenNum,
-  rotationMethod
+  rotationMethod,
+  mapOrientation,
+  mapOrientationFromKeys,
+  rotationMethodFromKeys,
+  mapOrientationKey,
+  rotationMethodKey
 } from "./stuff";
 import { phex, Phexes } from "./phex";
+import {
+  verifyMapOrientation,
+  verifyMapOrientationKey,
+  verifyRotationMethod,
+  verifyRotationMethodKey,
+  verifySplitHashArr
+} from "./verifiers";
 import { inspect } from "util";
 
 export type hashType = "rowCol" | "nested";
@@ -17,11 +29,25 @@ export class Icosahedron {
   // rows of points, ---------------------------------------- IMPORTANT: where to store offset, in triangle, or in each point?
   rows: gpoint3[][];
   triangles: triangle[];
+  mapOrientation: mapOrientation;
+  rotationMethod: rotationMethod;
 
   /**
-   * init icosahedron triangles and rows
+   * @WARNING dymaxion not ready yet, also, won't be "true" dymaxion, will only rotate icosahedron, and use either gnomonic or quaternion, official dymaxion doesn't use gnomonic projection
+   * @param mapOrientation
    */
-  constructor() {
+  constructor({
+    mapOrientation = "ECEF",
+    rotationMethod = "gnomonic"
+  }: {
+    mapOrientation: mapOrientation;
+    rotationMethod: rotationMethod;
+  }) {
+    verifyMapOrientation(mapOrientation);
+    verifyRotationMethod(rotationMethod);
+    this.mapOrientation = mapOrientation;
+    this.rotationMethod = rotationMethod;
+
     this.rows = [];
     const gr = Constants.golden_ratio;
     const r = Constants.radius;
@@ -54,7 +80,6 @@ export class Icosahedron {
       { x: _1, y: 0, z: _gr, isVert: true },
       rads
     );
-
     const top1: point3 = Vectors3.rotateAroundYAxis(
       { x: _gr, y: -_1, z: 0, isVert: true },
       rads
@@ -373,44 +398,44 @@ export class Icosahedron {
    * @param res resolution
    * @returns row col hash in format res|row|col
    */
-  generateHash({
-    p,
-    res,
-    rotationMethod = "gnomonic"
-  }: {
-    p: point3 | gpoint3;
-    res: resolution;
-    rotationMethod?: rotationMethod;
-  }): string {
-    if (rotationMethod === "gnomonic") {
-      const lazyPoints = this.pointsAroundLazy({
-        p: p,
-        res: res,
-        rotationMethod: rotationMethod
-      }).flat();
-      // closest point that is also phex center
-      const cp = Vectors3.closestPoint({ p: p, points: lazyPoints });
-      return Vectors3.hash(cp);
-    }
-    if (rotationMethod === "quaternion") {
-      throw new Error(
-        "quaternion rotation method not ready yet, very inaccurate right now, if you think you can solve this problem, it would be pretty sweet, problem is explained under 'spheircal triangle side percent calculation for quaternion rotation' in hex-map-dev, link: https://codesandbox.io/s/hex-map-dev-forked-f75ic?file=/src/limbo.ts"
-      );
-    }
+  generateHash({ p, res }: { p: point3 | gpoint3; res: resolution }): string {
+    const lazyPoints = this.pointsAroundLazy({
+      p: p,
+      res: res
+    }).flat();
+    // closest point that is also phex center
+    const cp = Vectors3.closestPoint({ p: p, points: lazyPoints });
+    return Vectors3.hash({
+      p: cp,
+      rotationMethod: this.rotationMethod,
+      mapOrientation: this.mapOrientation
+    });
   }
   /**
    * converts hash to the point it references
    * @param hash hash to parse, should be in format res|row|col
    * @returns point referenced by hash
+   * @throws error if invalid hash
    */
-  parseHash({
-    hash,
-    rotationMethod = "gnomonic"
-  }: {
-    hash: string;
-    rotationMethod?: rotationMethod;
-  }): gpoint3 {
-    const [res, row, col] = hash.split("|").map(Number);
+  static parseHash(hash: string): [Icosahedron, gpoint3] {
+    const hashComponents = hash.split("|");
+    verifySplitHashArr(hashComponents);
+    // res, row, col
+    const location =
+      hashComponents.length === 3 ? hashComponents : hashComponents.slice(2);
+    const [mapOrientationKey, rotationMethodKey] =
+      hashComponents.length === 3
+        ? ["e", "g"]
+        : hashComponents.slice(0, 3).map(String);
+    verifyMapOrientationKey(mapOrientationKey as mapOrientationKey);
+    verifyRotationMethodKey(rotationMethodKey as rotationMethodKey);
+    // create icosahedron from parsed map orientation and rotation method
+    const icosahedron = new Icosahedron({
+      mapOrientation: mapOrientationFromKeys[mapOrientationKey as mapOrientationKey],
+      rotationMethod: rotationMethodFromKeys[rotationMethodKey as rotationMethodKey]
+    });
+
+    const [res, row, col] = location.map(Number);
     const nd = numDivisions({ res: res as resolution });
     const maxRows = nd * 3;
     if (!res)
@@ -460,37 +485,34 @@ export class Icosahedron {
 
     const p = Triangles.generatePoint({
       res: res,
-      tri: this.triangles[triNum],
+      tri: icosahedron.triangles[triNum],
       lowerVert: lowerVert,
       lowerHorz: lowerHorz,
-      rotationMethod: rotationMethod
+      rotationMethod: icosahedron.rotationMethod
     });
 
-    return {
-      x: p.x,
-      y: p.y,
-      z: p.z,
-      res: res as resolution,
-      row: row,
-      col: col,
-      isVert: Vectors3.isPhexCenter({
+    return [
+      icosahedron,
+      {
+        x: p.x,
+        y: p.y,
+        z: p.z,
+        res: res as resolution,
         row: row,
         col: col,
-        res: res as resolution
-      })
-    };
+        isVert: Vectors3.isPhexCenter({
+          row: row,
+          col: col,
+          res: res as resolution
+        })
+      }
+    ];
   }
   /**
    * generates all points for resolution
    * gpoint3 row and col indexes match with returned array indexes
    */
-  allPoints({
-    resolution = 1,
-    rotationMethod = "gnomonic"
-  }: {
-    resolution: resolution;
-    rotationMethod: rotationMethod;
-  }): gpoint3[][] {
+  allPoints({ resolution = 1 }: { resolution: resolution }): gpoint3[][] {
     const points: gpoint3[][] = [[]];
     const offsetAmount = resolution * 3;
     for (const t of this.triangles) {
@@ -499,7 +521,7 @@ export class Icosahedron {
       const ps = Triangles.generateAllPoints({
         tri: t,
         resolution: resolution,
-        rotationMethod: rotationMethod
+        rotationMethod: this.rotationMethod
       });
       switch (t.pos) {
         case Position.TOP:
@@ -547,12 +569,10 @@ export class Icosahedron {
    */
   pointsAroundLazy({
     p,
-    res,
-    rotationMethod = "gnomonic"
+    res
   }: {
     p: point3 | gpoint3;
     res: resolution;
-    rotationMethod: rotationMethod;
   }): gpoint3[][] {
     const tri = this.getContainingTriangle({ p: p });
     const nd = numDivisions({ res: res });
@@ -561,7 +581,7 @@ export class Icosahedron {
       p: p,
       resolution: res,
       tri: tri,
-      rotationMethod: rotationMethod
+      rotationMethod: this.rotationMethod
     });
 
     function indexTop() {
@@ -723,18 +743,9 @@ export class Icosahedron {
    * @param res resolution
    * @returns phex that contains point for resolution
    */
-  getContainingPhex({
-    p,
-    res,
-    rotationMethod = "gnomonic"
-  }: {
-    p: point3;
-    res: resolution;
-    rotationMethod: rotationMethod;
-  }): phex {
+  getContainingPhex({ p, res }: { p: point3; res: resolution }): phex {
     const points = this.allPoints({
-      resolution: res,
-      rotationMethod: rotationMethod
+      resolution: res
     });
     const phexes: phex[] = Phexes.generateAllPhexes(points);
 

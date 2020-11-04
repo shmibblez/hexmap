@@ -1,3 +1,9 @@
+# Update 2.0.0
+ok, you may be thinking "dude, 4 days and already major version update?". Well yeah, this may be a case of what you call bad planning, but this update changes hashes and point generation methods, although not all implemented yet, but hey, better late than never, even though it's only been about 4 days.
+
+So here are the changes:
+- hashes used to follow the format `resolution|row|col`, now they follow the format `mapOrientation|rotationMethod|resolution|row|col`.
+- before there was `rotationMethod`, and it had to be provided for almost all `Icosahedron` instance methods, now there's also `mapOrientation` for when `dymaxion` orientation is added, and these now only have to be set when creating a new `Icosahedron` instead of every time you want to generate a hash or some points.
 
 # hexmap
 
@@ -16,18 +22,19 @@ import { Icosahedron, point3, Vectors3 } from 'hexmap';
 // or const { Icosahedron, point3, Vectors3 } = require('hexmap');
 
 // generate point
-const point = Vectors3.fromCoordinates({ lat: -90, lon: 0 })
+const point = Vectors3.fromCoordinates({ lat: 36.05, lon: -112.14 });
 // initialize icosahedron
-const icosahedron = new Icosahedron()
+const icosahedron = new Icosahedron({ mapOrientation: 'ECEF', rotationMethod: 'gnomonic' });
 ```
-
 And then you can generate a hash.
-
 ```
-const hash = icosahedron.generateHash({ p: point, res: 74, rotationMethod: 'gnomonic' })
+const hash = icosahedron.generateHash({ p: point, res: 74 });
 ```
-
-And that's pretty much it, for generating hashes at least. If you're wondering about `res` (resolution), there's a table with estimated hexagon radius below, and if you're wondering about `rotationMethod`, don't worry about it, but if you're already worrying about it you can see the difference between them at [(CodeSandbox)](https://codesandbox.io/s/hex-map-dev-z0qc0?file=/src/sketch.ts), just set `tripBalls` to true and it'll make sense.
+And generate a point from it, and its icosahedron (same mapOrientation and rotationMethod as point)
+```
+const [parsedIcosahedron, parsedPoint] = Icosahedron.parseHash(hash);
+```
+And that's pretty much it, for hashes at least. If you're wondering about `res` (resolution), there's a table with estimated hexagon radius below, and if you're wondering about `rotationMethod`, don't worry about it, but if you're already worrying about it you can see the difference between them at [(CodeSandbox)](https://codesandbox.io/s/hex-map-dev-z0qc0?file=/src/sketch.ts), just set `tripBalls` to true and it'll make sense.
 
 If you're thinking "that's it?", well for now yes. There's more stuff that this baby can do, it just needs to be added, see at the bottom for subreddit and contact info, and if people request stuff it'll almost definitely be added, as long as it's coherent with the project.
 
