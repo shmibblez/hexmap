@@ -1,5 +1,5 @@
 # Update 2.0.0
-ok, you may be thinking "dude, 4 days and already major version update?". Well yeah, this may be a case of what you call bad planning, but this update changes hashes and point generation methods, although not all implemented yet, but hey, better late than never, even though it's only been about 4 days.
+ok, you may be thinking "dude, 4 days and already a major version update?". Well yeah, this may be a case of what you call bad planning, but this update changes hashes and point generation methods, although not all implemented yet, but hey, better late than never, even though it's only been about 4 days.
 
 So here are the changes:
 - hashes used to follow the format `resolution|row|col`, now they follow the format `mapOrientation|rotationMethod|resolution|row|col`.
