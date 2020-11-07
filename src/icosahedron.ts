@@ -44,7 +44,7 @@ export class Icosahedron {
     rotationMethod: rotationMethod;
   }) {
     verifyMapOrientation(mapOrientation);
-    verifyRotationMethod(rotationMethod);
+    verifyRotationMethod(rotationMethod, false);
     this.mapOrientation = mapOrientation;
     this.rotationMethod = rotationMethod;
 
@@ -403,6 +403,7 @@ export class Icosahedron {
       p: p,
       res: res
     }).flat();
+    verifyRotationMethod(this.rotationMethod);
     // closest point that is also phex center
     const cp = Vectors3.closestPoint({ p: p, points: lazyPoints });
     return Vectors3.hash({
@@ -574,6 +575,8 @@ export class Icosahedron {
     p: point3 | gpoint3;
     res: resolution;
   }): gpoint3[][] {
+    verifyRotationMethod(this.rotationMethod);
+
     const tri = this.getContainingTriangle({ p: p });
     const nd = numDivisions({ res: res });
     // points and lazy range start indexes in relation to tri.C

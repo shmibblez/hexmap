@@ -35,13 +35,13 @@ export function verifyMapOrientationKey(mo: mapOrientationKey): boolean {
     }
     return true;
 }
-export function verifyRotationMethod(rm: rotationMethod): boolean {
+export function verifyRotationMethod(rm: rotationMethod, throwIfQuaternion = true): boolean {
     if (rm !== "gnomonic" && rm !== "quaternion") {
         throw new Error(
             `invaild rotation method, valid ones: "gnomonic" or "quaternion", provided one: ${rm}`
         );
     }
-    if (rm === "quaternion") {
+    if (throwIfQuaternion && rm === "quaternion") {
         throw new Error(
             "quaternion rotation method not ready yet, very inaccurate right now, if you think you can solve this problem, it would be pretty sweet, problem is explained in hexmap README towards the bottom"
         );
